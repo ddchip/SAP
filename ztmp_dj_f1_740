@@ -1,0 +1,123 @@
+*&---------------------------------------------------------------------*
+*& Report ztmp_dj_f1_750
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ztmp_dj_f1_740.
+
+"Font:
+"https://community.sap.com/t5/application-development-and-automation-
+"blog-posts/abap-news-for-release-7-40-inline-declarations/ba-p/
+"13044902https://community.sap.com/t5/application-development-and-
+"automation-blog-posts/abap-news-for-release-7-40-inline-declarations/
+"ba-p/13044902
+
+
+"1- Declaration of a lhs-variable for a simple assignmentDeclaration
+"of a lhs-variable for a simple assignment
+
+**Before 7.40
+*DATA text TYPE string.
+*text = '...'.
+*
+**With 7.40
+*DATA(text1) = '...' .
+*
+**2- Declaration of table work areas
+**Before 7.40
+*DATA wa like LINE OF itab.
+*
+*LOOP AT itab INTO wa.
+**  ...
+*ENDLOOP.
+*
+**With 7.40
+*LOOP AT itab INTO DATA(wa).
+**  ...
+*ENDLOOP.
+
+
+*3- Declaration of a helper variable
+*Before 7.40
+
+DATA cnt TYPE i.
+DATA vl_cnt(6) VALUE 123456.
+
+FIND '123' IN vl_cnt MATCH COUNT cnt.
+
+*With 7.40
+*FIND ... IN ... MATCH COUNT DATA(cnt).
+
+
+*4- Declaration of a result
+*Before 7.40
+*Create from table transformation - Tcode: XSLT_TOOL
+DATA xml TYPE xstring.
+
+BREAK-POINT.
+
+SELECT * FROM sflight INTO TABLE @DATA(lt).
+CALL TRANSFORMATION z_tmp_sflight SOURCE sflight_table = lt
+                                  RESULT XML xml.
+
+*With 7.40
+CALL TRANSFORMATION z_tmp_sflight SOURCE sflight_table = lt
+                                  RESULT XML DATA(xml2).
+
+*cl_demo_output=>write_xml( xml2 ).
+*cl_demo_output=>display_xml( xml2 ).
+
+
+*5- Declaration of actual parameters
+*Before 7.40
+
+*DATA a1 TYPE ...
+*DATA a2 TYPE ...
+*
+*oref->meth( IMPORTING p1 = a1
+*            IMPORTING p2 = a2
+*            ... ).
+*
+**With 7.40
+*oref->meth( IMPORTING p1 = DATA(b1)
+*            IMPORTING p2 = DATA(b2)
+*            ... ).
+
+
+*6- Declaration of reference variables for factory methods
+*Before 7.40
+DATA ixml           TYPE REF TO if_ixml.
+DATA stream_factory TYPE REF TO if_ixml_stream_factory.
+DATA document       TYPE REF TO if_ixml_document.
+
+ixml           = cl_ixml=>create( ).
+stream_factory = ixml->create_stream_factory( ).
+document       = ixml->create_document( ).
+
+*With 7.40
+DATA(ixml2)           = cl_ixml=>create( ).
+DATA(stream_factory2) = ixml2->create_stream_factory( ).
+DATA(document2)       = ixml2->create_document( ).
+
+
+*Field Symbols
+*For field symbols there is the new declaration operator FIELD-SYMBOL(...)
+"that you can use at exactly three declaration positions.
+
+*ASSIGN ... TO FIELD-SYMBOL(<fs>).
+
+*LOOP AT itab ASSIGNING FIELD-SYMBOL(<line>).
+*...
+*ENDLOOP.
+
+*READ TABLE itab ASSIGNING FIELD-SYMBOL(<line>) ...
+
+
+
+*Outlook
+*In my upcoming blogs I will make use of inline declarations when introducing
+"other new features. Be prepared for code like this:
+
+TYPES t_itab TYPE TABLE OF i WITH EMPTY KEY.
+
+DATA(itab) = VALUE t_itab( ( 1 ) ( 2 ) ( 3 ) ).
