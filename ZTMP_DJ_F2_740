@@ -1,0 +1,100 @@
+*&---------------------------------------------------------------------*
+*& Report ZTMP_DJ_F2_740
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ztmp_dj_f2_740.
+
+" Abap Mordern.
+" Constructor expression VALUE;
+
+TYPES: BEGIN OF t_col2,
+         col_1 TYPE i,
+         col_2 TYPE i,
+       END OF t_col2.
+
+TYPES: BEGIN OF t_struct,
+         col_1 TYPE i,
+         col_2 TYPE t_col2,
+       END OF t_struct.
+
+DATA: ls_struct TYPE t_struct,
+      ls_col2   TYPE t_col2.
+
+*1 - Example of Initial Value
+CLASS c1 DEFINITION.
+
+  PUBLIC SECTION.
+    TYPES: BEGIN OF t_struct,
+             col_1 TYPE i,
+             col_2 TYPE i,
+           END OF t_struct.
+
+    CLASS-METHODS m1 IMPORTING imp TYPE t_struct.
+
+ENDCLASS.
+
+
+CLASS c1 IMPLEMENTATION.
+  METHOD m1.
+    IF sy-subrc EQ 1.
+      EXIT.
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+
+START-OF-SELECTION.
+
+* Structures
+  "1st
+  c1=>m1( VALUE #( col_1 = 1
+                   col_2 = 2 ) ).
+
+  "2nd
+  ls_struct = VALUE t_struct( col_1 = 1
+                              col_2-col_1 = 1
+                              col_2-col_2 = 2 ).
+
+*3rd
+  ls_col2 = VALUE t_col2( col_1 = 1
+                          col_2 = 2 ).
+
+  ls_struct = VALUE t_struct( col_1 = 1
+                              col_2 = ls_col2 ).
+
+*4th
+  ls_struct = VALUE t_struct( col_1 = 1
+                              col_2 = VALUE #( col_1 = 1
+                                               col_2 = 2 ) ).
+
+*5th
+*  Internal Tables
+
+*  Elementary line type:
+  TYPES: t_itab TYPE TABLE OF i WITH EMPTY KEY.
+
+  DATA: itab TYPE t_itab.
+
+  itab = VALUE #( ( ) ( 1 ) ( 2 ) ).
+
+
+*  Ranges table
+  DATA: tab TYPE RANGE OF i.
+
+  tab = VALUE #( sign = 'I' option = 'BT' ( low = 1  high = 10 )
+                                          ( low = 12 high = 30 )
+                                          ( low = 41 high = 50 )
+                            option = 'GE' ( low = 61 ) ).
+
+* Using value while expressions or function calls
+
+  types y_date_tab type table of string with EMPTY KEY.
+
+  DATA(date_tab) = VALUE y_date_tab( ( |{ conv d( sy-datlo - 1 ) DATE = ENVIRONMENT }| )
+                                     ( |{         sy-datlo       DATE = ENVIRONMENT }| )
+                                     ( |{ conv d( sy-datlo + 1 ) DATE = ENVIRONMENT }| ) ).
+
+  BREAK-POINT.
