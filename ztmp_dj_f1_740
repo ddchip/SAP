@@ -3,7 +3,7 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT ztmp_dj_f1_740.
+REPORT ztmp_dj_f1_740. "Inline Declarations
 
 "Font:
 "https://community.sap.com/t5/application-development-and-automation-
